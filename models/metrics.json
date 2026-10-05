@@ -1,0 +1,14 @@
+{
+  "trees": 222,
+  "threshold": 0.3482,
+  "pr_auc": 0.8707,
+  "roc_auc": 0.9973,
+  "precision": 0.875,
+  "recall": 0.7636,
+  "true_positives": 1638,
+  "false_positives": 234,
+  "false_negatives": 507,
+  "true_negatives": 553340,
+  "test_rows": 555719,
+  "test_fraud_rate": 0.00386
+}
