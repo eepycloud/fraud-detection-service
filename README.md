@@ -8,6 +8,12 @@ The app runs on Render Free. A first request after inactivity may take about a m
 
 No real bank data is used. This extends the public-data fraud monitoring work I built during my Jordan Kuwait Bank BI rotation ([Tableau dashboard](https://public.tableau.com/views/credit-card-fraud-bi/Dashboard), [original repository](https://github.com/eepycloud/credit-card-fraud-bi)).
 
+## Dashboard preview
+
+[![Fraud Observatory dashboard showing a labeled demo sample, transaction activity, and drift monitoring](docs/dashboard-preview.png)](https://fraud-detection-service-srsh.onrender.com/)
+
+The screenshot shows the fixed 5,000-row demo sample. Its metrics differ from the full 555,719-row test benchmark reported below.
+
 ## What is included
 
 | Component | Behavior |
