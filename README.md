@@ -12,8 +12,8 @@ This project grew out of a fraud monitoring dashboard I built in Alteryx and Tab
 | --- | --- | --- |
 | 1 | Baseline model with precision, recall, and PR-AUC on the fraud class | Done |
 | 2 | FastAPI scoring endpoint | Done |
-| 2 | Docker image | In progress |
-| 3 | Azure deployment with GitHub Actions CI/CD | Planned |
+| 2 | Docker image | Done (built and smoke-tested) |
+| 3 | Free Render deployment with GitHub Actions CI checks | In progress |
 | 4 | Replay transactions as a live stream and store scores | Planned |
 | 5 | Drift and performance monitoring dashboard | Planned |
 
@@ -106,6 +106,75 @@ uvicorn app:app --app-dir src --reload
 ```
 
 5. Open http://127.0.0.1:8000/docs to try `POST /score` in the browser.
+
+## Running with Docker
+
+The service is trained on a public simulated dataset. No bank data is included.
+
+Install and start Docker Desktop with Linux containers enabled. The repository includes the small saved model trained on a public simulated dataset, so a fresh clone can build without downloading the training CSV files.
+
+From the project root (Windows Command Prompt):
+
+```cmd
+docker build -t fraud-detection-service:local .
+docker run --detach --name fraud-api --publish 127.0.0.1:8000:8000 fraud-detection-service:local
+curl.exe --fail http://127.0.0.1:8000/health
+```
+
+Open http://127.0.0.1:8000/docs and try the example transaction. The health
+endpoint should return `{"status":"ok"}`. The existing example should score
+approximately 0.000022, below the 0.3482 fraud threshold.
+
+```cmd
+docker inspect --format="{{.State.Health.Status}}" fraud-api
+docker logs fraud-api
+docker stop fraud-api
+docker rm fraud-api
+```
+
+The image runs as an unprivileged user. Its build context includes only API
+source, dependencies, and the saved model; datasets, local environments, and
+Git history are excluded. The port is bound to this computer only.
+
+## Free deployment on Render
+
+The deployment target is Render's Free web service plan rather than Azure.
+No student account is needed. Free services sleep after 15 minutes without
+requests, so the next request can take about a minute to wake the API.
+This is a public portfolio demo on a public simulated dataset, not a bank service.
+
+1. Create a Render account and connect this GitHub repository.
+2. Create a Blueprint from `render.yaml`, or create a Web Service using Docker.
+3. Select **Free** (512 MB), port `8000`, and health check `/health`.
+   Do not select a paid instance or add a database.
+4. Enable auto-deploy **After CI Checks Pass** for the deployment branch.
+5. Once live, open the service URL followed by `/docs` and run:
+
+```cmd
+python tests\smoke_test.py https://YOUR-SERVICE.onrender.com
+```
+
+GitHub Actions builds the Docker image, runs it with a 512 MB memory limit,
+and tests health, scoring, and invalid inputs. Render rebuilds and deploys
+commits after those checks pass. `render.yaml` records the service settings.
+The saved model is included in Git; raw transaction CSV files remain excluded.
+
+Free-tier limits: https://render.com/docs/free
+
+## Verification
+
+Verified on 31 Oct 2026: the Linux container passed all smoke checks under a 512 MB memory cap, reported healthy, and used approximately 119 MiB at the post-test measurement.
+
+
+Run the smoke test against a local API or container:
+
+```cmd
+python tests\smoke_test.py http://127.0.0.1:8000
+```
+
+It verifies the documented baseline probability, an increased-risk transaction,
+health, and rejection of invalid amounts, categories, coordinates, gender,
+timezone-aware timestamps, and missing fields.
 
 ## API
 

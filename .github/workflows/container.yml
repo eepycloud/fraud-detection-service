@@ -1,0 +1,26 @@
+name: Container checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build service image
+        run: docker build -t fraud-api:test .
+      - name: Start with free-host memory limit
+        run: docker run -d --name fraud-api --memory=512m -p 127.0.0.1:8000:8000 fraud-api:test
+      - name: Test health, scores, and validation
+        run: python3 tests/smoke_test.py
+      - name: Show logs and memory use
+        if: always()
+        run: |
+          docker logs fraud-api
+          docker stats --no-stream fraud-api
+      - name: Stop service
+        if: always()
+        run: docker rm -f fraud-api

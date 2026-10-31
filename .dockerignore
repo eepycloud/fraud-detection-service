@@ -1,0 +1,10 @@
+# Allow only the files needed by the API into the build context.
+**
+!Dockerfile
+!.dockerignore
+!requirements.txt
+!src/
+!src/app.py
+!src/features.py
+!models/
+!models/baseline.joblib
