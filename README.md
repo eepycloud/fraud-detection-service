@@ -55,6 +55,17 @@ The classifier uses 222 trees, learning rate 0.05, and 63 leaves. See [saved met
 
 PR-AUC is the primary metric because only 0.386% of test transactions are fraud. Accuracy is misleading for this imbalance; ROC-AUC alone does not describe the precision/recall tradeoff.
 
+### PyTorch comparison (completed on a GitHub cloud runner)
+
+| Model | Test PR-AUC | Precision | Recall |
+| --- | --- | --- | --- |
+| LightGBM (served) | 0.8707 | 87.5% | 76.4% |
+| PyTorch MLP (64, 32) | 0.8136 | 83.9% | 71.4% |
+
+Both use the same nine input features and chronological split. The MLP standardizes numeric inputs, one-hot encodes category, and uses weighted binary cross-entropy. It trained for 15 CPU epochs; its threshold was selected on validation F1. Scores are not claimed to be calibrated probabilities. LightGBM remains the serving model because it performs better here. [Cloud run and evaluation summary](https://github.com/eepycloud/fraud-detection-service/actions/runs/41244170170), [saved comparison](models/torch_metrics.json).
+
+The cloud candidate-retraining pipeline also completed successfully. Candidate and baseline validation PR-AUC were both 0.9198; the candidate was retained for review and was not promoted.
+
 The dashboard uses a **fixed uniform sample of 5,000 test transactions, with 20 frauds**. Its sample metrics differ from the full test benchmark; those results are labeled separately. No test labels are used to tune the deployed model.
 
 Gender was retained after comparison (PR-AUC 0.871 with it, 0.844 without). A bank deployment would need a fairness review before using it. Amount and hour dominate feature importance, reflecting the simulator's design. Distance has little predictive value even though it was useful for the original dashboard analysis.
@@ -140,6 +151,8 @@ The existing score response is preserved:
 ```
 
 ## Verification and deployment
+
+The **Live deployment checks** workflow runs public API checks and real desktop/mobile browser interactions entirely on GitHub cloud runners, saving screenshots as short-lived artifacts.
 
 GitHub Actions runs SQLite persistence/idempotence/retention tests, known-outcome metric checks, PSI tests, and HTTP checks for the dashboard, scoring, monitoring, replay bounds, and invalid inputs. The API container is tested with a 512 MB memory cap.
 

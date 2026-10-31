@@ -1,0 +1,24 @@
+{
+  "model": "PyTorch MLP (64,32)",
+  "features": [
+    "amt",
+    "hour",
+    "day_of_week",
+    "month",
+    "age",
+    "distance_km",
+    "city_pop",
+    "category",
+    "gender"
+  ],
+  "validation_pr_auc": 0.8519050631290098,
+  "threshold": 0.9863690137863159,
+  "pr_auc": 0.8135887690487102,
+  "precision": 0.838904109589041,
+  "recall": 0.7137529137529137,
+  "test_rows": 555719,
+  "epochs_run": 15,
+  "torch_version": "2.15.0+cpu",
+  "source_run": "https://github.com/eepycloud/fraud-detection-service/actions/runs/41244170170",
+  "note": "Comparison only; serving model remains LightGBM. Threshold and early stopping use the chronological validation period."
+}
