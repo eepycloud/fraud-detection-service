@@ -34,10 +34,10 @@ class Store:
                 VALUES (:id,:event_time,:amount,:hour,:category,:probability,:prediction,:label,:source,:latency_ms,:features)""", rows)
             for source in {r["source"] for r in rows}:
                 db.execute("""DELETE FROM scores WHERE source=? AND id NOT IN
-                    (SELECT id FROM scores WHERE source=? ORDER BY event_time DESC, id DESC LIMIT 5000)""", (source,source))
+                    (SELECT id FROM scores WHERE source=? ORDER BY rowid DESC LIMIT 5000)""", (source,source))
     def recent(self, source, limit=5000):
         with self.connection() as db:
-            rows = db.execute("SELECT * FROM scores WHERE source=? ORDER BY event_time DESC,id DESC LIMIT ?", (source,limit)).fetchall()
+            rows = db.execute("SELECT * FROM scores WHERE source=? ORDER BY rowid DESC LIMIT ?", (source,limit)).fetchall()
         result = [dict(r) for r in reversed(rows)]
         for row in result:
             row["features"] = json.loads(row["features"])

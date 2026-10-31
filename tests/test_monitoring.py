@@ -40,5 +40,7 @@ class MonitoringTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             a=Store(Path(directory)/"scores.db")
             a.add([row(i) for i in range(5005)])
-            self.assertEqual(len(a.recent("replay")),5000)
+            retained=a.recent("replay")
+            self.assertEqual(len(retained),5000)
+            self.assertEqual([int(r["id"]) for r in retained],list(range(5,5005)))
 if __name__=="__main__":unittest.main()
