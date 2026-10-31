@@ -10,6 +10,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Validate dashboard JavaScript
+        run: node tests/check_dashboard_js.js
       - name: Build service image
         run: docker build -t fraud-api:test .
       - name: Test storage and monitoring logic
