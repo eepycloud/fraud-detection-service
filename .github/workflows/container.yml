@@ -24,3 +24,14 @@ jobs:
       - name: Stop service
         if: always()
         run: docker rm -f fraud-api
+      - name: Deploy to Render after successful checks
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "Render deploy hook is not configured; container checks passed."
+          else
+            curl --fail --silent --show-error --request POST "$RENDER_DEPLOY_HOOK_URL" > /dev/null
+            echo "Render deployment requested after successful container checks."
+          fi

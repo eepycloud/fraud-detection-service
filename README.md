@@ -152,7 +152,9 @@ This is a public portfolio demo on a public simulated dataset, not a bank servic
 2. Create a Blueprint from `render.yaml`, or create a Web Service using Docker.
 3. Select **Free** (512 MB), port `8000`, and health check `/health`.
    Do not select a paid instance or add a database.
-4. Enable auto-deploy **After CI Checks Pass** for the deployment branch.
+4. Add the Render deploy-hook URL as the GitHub repository Actions secret
+   `RENDER_DEPLOY_HOOK_URL`. Keep the URL secret. Set Render Auto-Deploy to Off
+   so only successful GitHub checks request deployments.
 5. Once live, open the service URL followed by `/docs` and run:
 
 ```cmd
@@ -160,8 +162,9 @@ python tests\smoke_test.py https://fraud-detection-service-srsh.onrender.com
 ```
 
 GitHub Actions builds the Docker image, runs it with a 512 MB memory limit,
-and tests health, scoring, and invalid inputs. Render rebuilds and deploys
-commits after those checks pass. `render.yaml` records the service settings.
+and tests health, scoring, and invalid inputs. On pushes to main, the workflow
+then calls the private Render deploy hook. Render rebuilds and deploys
+only after those checks pass. `render.yaml` records the service settings.
 The saved model is included in Git; raw transaction CSV files remain excluded.
 
 Free-tier limits: https://render.com/docs/free

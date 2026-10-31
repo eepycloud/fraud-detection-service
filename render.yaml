@@ -6,7 +6,7 @@ services:
     region: frankfurt
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
-    autoDeployTrigger: checksPass
+    autoDeployTrigger: off
     envVars:
       - key: PORT
         value: "8000"
