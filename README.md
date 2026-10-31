@@ -2,6 +2,11 @@
 
 Real-time credit card fraud detection. A LightGBM model trained on about 1.85M transactions, served through a FastAPI scoring endpoint.
 
+**Live demo:** https://fraud-detection-service-srsh.onrender.com/docs
+**Health:** https://fraud-detection-service-srsh.onrender.com/health
+
+Hosted on Render Free. The service wakes on request after inactivity.
+
 This project grew out of a fraud monitoring dashboard I built in Alteryx and Tableau during my training at Jordan Kuwait Bank ([dashboard](https://public.tableau.com/views/credit-card-fraud-bi/Dashboard), [repo](https://github.com/eepycloud/credit-card-fraud-bi)). The dashboard showed *where* fraud happens. This service takes the same data and scores individual transactions as they arrive.
 
 > **Data note:** all work uses the public, simulated Sparkov dataset from Kaggle. No real bank data is used.
@@ -13,7 +18,7 @@ This project grew out of a fraud monitoring dashboard I built in Alteryx and Tab
 | 1 | Baseline model with precision, recall, and PR-AUC on the fraud class | Done |
 | 2 | FastAPI scoring endpoint | Done |
 | 2 | Docker image | Done (built and smoke-tested) |
-| 3 | Free Render deployment with GitHub Actions CI checks | In progress |
+| 3 | Free Render deployment with GitHub Actions CI checks | Live (31 Oct 2026) |
 | 4 | Replay transactions as a live stream and store scores | Planned |
 | 5 | Drift and performance monitoring dashboard | Planned |
 
@@ -151,7 +156,7 @@ This is a public portfolio demo on a public simulated dataset, not a bank servic
 5. Once live, open the service URL followed by `/docs` and run:
 
 ```cmd
-python tests\smoke_test.py https://YOUR-SERVICE.onrender.com
+python tests\smoke_test.py https://fraud-detection-service-srsh.onrender.com
 ```
 
 GitHub Actions builds the Docker image, runs it with a 512 MB memory limit,

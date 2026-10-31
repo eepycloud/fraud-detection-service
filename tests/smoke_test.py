@@ -31,11 +31,14 @@ def main():
             status, health = request("/health")
             if status == 200 and health == {"status": "ok"}:
                 break
-        except (URLError, TimeoutError, ConnectionError, HTTPException):
+        except (URLError, TimeoutError, ConnectionError, HTTPException, json.JSONDecodeError):
             pass
         time.sleep(2)
     else:
         raise AssertionError("API did not become healthy within 120 seconds")
+
+    with urlopen(BASE + "/", timeout=10) as response:
+        assert response.status == 200 and response.geturl().endswith("/docs")
 
     status, result = request("/score", EXAMPLE)
     assert status == 200, (status, result)

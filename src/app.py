@@ -6,6 +6,7 @@ from typing import Literal
 import joblib
 import pandas as pd
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field, NaiveDatetime
 
 from features import CATEGORIES, build_features
@@ -59,8 +60,13 @@ class Score(BaseModel):
 app = FastAPI(
     title="Fraud Detection Service",
     description="Scores credit card transactions with a LightGBM model.",
-    version="0.1.0",
+    version="0.2.0",
 )
+
+
+@app.get("/", include_in_schema=False)
+def index():
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
