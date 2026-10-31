@@ -26,7 +26,7 @@ def load(name):
     return build_features(df), df[TARGET]
 
 
-def main():
+def main(threads=-1):
     X, y = load("fraudTrain.csv")
     X_test, y_test = load("fraudTest.csv")
 
@@ -46,7 +46,7 @@ def main():
         colsample_bytree=0.8,
         metric="average_precision",
         random_state=42,
-        n_jobs=-1,
+        n_jobs=threads,
         verbose=-1,
     )
     model.fit(
@@ -102,4 +102,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path, default=MODELS)
+    parser.add_argument("--threads", type=int, default=-1)
+    args = parser.parse_args()
+    MODELS = args.output_dir
+    main(args.threads)

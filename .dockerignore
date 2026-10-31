@@ -8,3 +8,10 @@
 !src/features.py
 !models/
 !models/baseline.joblib
+!src/store.py
+!src/monitoring.py
+!src/dashboard.html
+!models/reference.json
+!models/metrics.json
+!demo/
+!demo/transactions.json

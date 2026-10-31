@@ -38,7 +38,7 @@ def main():
         raise AssertionError("API did not become healthy within 120 seconds")
 
     with urlopen(BASE + "/", timeout=10) as response:
-        assert response.status == 200 and response.geturl().endswith("/docs")
+        assert response.status == 200 and b"Fraud Observatory" in response.read()
 
     status, result = request("/score", EXAMPLE)
     assert status == 200, (status, result)
@@ -56,6 +56,15 @@ def main():
         assert status == 422, (patch, status, error)
     status, error = request("/score", {})
     assert status == 422, (status, error)
+    status, monitoring = request("/api/monitor?source=demo")
+    assert status == 200 and monitoring["count"] == 5000 and monitoring["labeled"] == 5000, monitoring
+    assert monitoring["actual_fraud"] == 20 and monitoring["pr_auc"] is not None, monitoring
+    status, replay = request("/api/replay?batch=50", {})
+    assert status == 200 and 0 <= replay["processed"] <= 50, replay
+    status, live = request("/api/monitor?source=live")
+    assert status == 200 and live["count"] >= 2 and live["labeled"] == 0 and live["pr_auc"] is None, live
+    assert request("/api/replay?batch=51", {})[0] == 422
+    assert request("/api/monitor?source=invalid")[0] == 422
     print("PASS: health, baseline score, increased-risk example, and six invalid inputs")
     print(json.dumps(result))
 

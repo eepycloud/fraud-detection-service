@@ -16,14 +16,15 @@ RUN apt-get update \
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
-RUN groupadd --system app && useradd --system --gid app app
+RUN groupadd --system app && useradd --system --gid app app \
+    && mkdir -p /app/runtime && chown app:app /app/runtime
 COPY --chown=app:app src/ ./src/
 # Bundle the model trained on public simulated data for reproducible deployments.
-COPY --chown=app:app models/baseline.joblib ./models/baseline.joblib
+COPY --chown=app:app models/ ./models/
+COPY --chown=app:app demo/ ./demo/
 
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)" || exit 1
 CMD ["python", "-m", "uvicorn", "app:app", "--app-dir", "src", "--host", "0.0.0.0", "--port", "8000"]
-

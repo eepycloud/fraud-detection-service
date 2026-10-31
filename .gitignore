@@ -223,3 +223,10 @@ models/*.joblib
 
 # Small model trained on public simulated data, required by container builds.
 !models/baseline.joblib
+
+# Local scoring journals and candidate models
+runtime/
+models/candidates/
+models/*.pt
+
+models/torch_preprocessor.joblib
